@@ -17,5 +17,18 @@ class Ant {
         health -= 20;
     }
 
+    boolean killAnt(){
+        return (health < 0) ;
+    }
+
+    boolean breedAnt(){
+        return (health > 100);
+    }
+
+    void setHealth() {
+        health=100;
+    }
+
+
 }
 
