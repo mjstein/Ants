@@ -1,5 +1,6 @@
 package Colony;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Random;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -38,30 +39,45 @@ public class AntColony {
     public ArrayList<ArrayList<Integer>> tickAnts(){
         ArrayList<ArrayList<Integer>> evolutionReportAnts = new ArrayList<>();
         for(int i=0; i<(evolutions); i++) {
-            feedAnts();
-            expendAnts();
+            pruneAnts();
             evolutionReportAnts.add(reportAnts());
         }
         return evolutionReportAnts;
     }
 
-    private void feedAnts(){
-        iterateOverAnts ioa = (i) -> {
-            ants.get(i).eat(foodFactor);
-        };
-        loopOverAnts(ants.size(),ioa);
+    public int getColonySize() {
+        return ants.size();
     }
-    private void expendAnts(){
-        iterateOverAnts ioa = (i) -> {
-            ants.get(i).expendAnt();
-        };
-        loopOverAnts(ants.size(),ioa);
-    }
+
+    private void pruneAnts()
+    {
+        Iterator<Ant> iter = ants.iterator();
+        int antsToAdd=0;
+        while (iter.hasNext()) {
+            Ant ant = iter.next();
+
+            if (ant.killAnt()) {
+                iter.remove();
+            }
+            else if (ant.breedAnt()) {
+                ant.setHealth();
+                antsToAdd++;
+            }
+          }
+          for(int i=0;i<antsToAdd;i++) {
+            ants.add(new Ant());
+          }
+
+        }
+
 
     private ArrayList<Integer> reportAnts() {
         ArrayList<Integer> antReport = new ArrayList<>();
         iterateOverAnts ioa = (i) -> {
-            antReport.add(ants.get(i).reportAnt());
+            Ant ant = ants.get(i);
+                ant.eat(foodFactor);
+                ant.expendAnt();
+                antReport.add(ant.reportAnt());
         };
         loopOverAnts(ants.size(),ioa);
         return antReport;
